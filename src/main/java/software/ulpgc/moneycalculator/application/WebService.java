@@ -1,16 +1,19 @@
 package software.ulpgc.moneycalculator.application;
 
 import software.ulpgc.moneycalculator.architecture.model.Currency;
+import software.ulpgc.moneycalculator.architecture.model.ExchangeRate;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +76,41 @@ public class WebService {
             URL url = new URL((ApiUrl + "codes"));
             return url.openConnection();
         }
+    }
+
+    public static class ExchangeRateLoader implements software.ulpgc.moneycalculator.architecture.io.ExchangeRateLoader {
+        @Override
+        public ExchangeRate load(Currency from, Currency to) {
+            try {
+                return new ExchangeRate(
+                        LocalDate.now(),
+                        from,
+                        to,
+                        readConversionRate(new URL(ApiUrl + "pair/" + from.code() + "/" + to.code()))
+                );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private double readConversionRate(URL url) throws IOException {
+            return readConversionRate(url.openConnection());
+        }
+
+        private double readConversionRate(URLConnection connection) throws IOException {
+            try (InputStream inputStream = connection.getInputStream()) {
+                return readConversionRate(new String(new BufferedInputStream(inputStream).readAllBytes()));
+            }
+        }
+
+        private double readConversionRate(String json) {
+            return readConversionRate(new Gson().fromJson(json, JsonObject.class));
+        }
+
+        private double readConversionRate(JsonObject object) {
+            return object.get("conversion_rate").getAsDouble();
+        }
+
     }
 }
 
