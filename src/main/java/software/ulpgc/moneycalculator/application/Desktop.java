@@ -4,6 +4,7 @@ import software.ulpgc.moneycalculator.architecture.control.Command;
 import software.ulpgc.moneycalculator.architecture.model.Currency;
 import software.ulpgc.moneycalculator.architecture.model.Money;
 import software.ulpgc.moneycalculator.architecture.ui.CurrencyDialog;
+import software.ulpgc.moneycalculator.architecture.ui.CurrencyDisplay;
 import software.ulpgc.moneycalculator.architecture.ui.MoneyDialog;
 import software.ulpgc.moneycalculator.architecture.ui.MoneyDisplay;
 
@@ -42,6 +43,7 @@ public class Desktop extends JFrame {
         panel.add(inputCurrency = currencySelector());
         panel.add(outputAmount = amountOutput());
         panel.add(outputCurrency = currencySelector());
+        panel.add(swapButton());
         panel.add(calculateButton());
         return panel;
     }
@@ -49,6 +51,12 @@ public class Desktop extends JFrame {
     private Component calculateButton() {
         JButton button = new JButton("Exchange");
         button.addActionListener(e -> commands.get("exchange").execute());
+        return button;
+    }
+
+    private Component swapButton() {
+        JButton button = new JButton("Swap");
+        button.addActionListener(e -> commands.get("swap").execute());
         return button;
     }
 
@@ -79,8 +87,20 @@ public class Desktop extends JFrame {
         return () -> new Money(inputAmount(), inputCurrency());
     }
 
-    public CurrencyDialog currencyDialog() {
+    public CurrencyDialog currencyFromDialog() {
+        return this::inputCurrency;
+    }
+
+    public CurrencyDialog currencyToDialog() {
         return this::outputCurrency;
+    }
+
+    public CurrencyDisplay currencyFromDisplay() {
+        return currency -> inputCurrency.setSelectedItem(currency);
+    }
+
+    public CurrencyDisplay currencyToDisplay() {
+        return currency -> outputCurrency.setSelectedItem(currency);
     }
 
     public MoneyDisplay moneyDisplay() {
