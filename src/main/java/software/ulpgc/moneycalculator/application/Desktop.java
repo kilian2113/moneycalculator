@@ -29,7 +29,7 @@ public class Desktop extends JFrame {
         this.currencies = currencies;
         this.setTitle("Money Calculator");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(800,600);
+        this.setSize(400,300);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setLayout(new BorderLayout());
@@ -38,25 +38,56 @@ public class Desktop extends JFrame {
 
     private JPanel panel() {
         JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(CENTER));
-        panel.add(inputAmount = amountInput());
-        panel.add(inputCurrency = currencySelector());
-        panel.add(outputAmount = amountOutput());
-        panel.add(outputCurrency = currencySelector());
-        panel.add(swapButton());
-        panel.add(calculateButton());
+        panel.setLayout(new GridLayout(3, 1));
+        panel.add(titlePanel());
+        panel.add(topPanel());
+        panel.add(bottomPanel());
         return panel;
     }
 
+    private JPanel titlePanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        JLabel titleLabel = new JLabel("Exchange Currencies");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel);
+        return panel;
+    }
+
+    private JPanel topPanel() {
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridBagLayout());
+        topPanel.add(inputAmount = amountInput());
+        topPanel.add(inputCurrency = currencySelector());
+        topPanel.add(outputAmount = amountOutput());
+        topPanel.add(outputCurrency = currencySelector());
+        return topPanel;
+    }
+
+    private JPanel bottomPanel() {
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout(CENTER));
+        bottomPanel.add(swapButton());
+        bottomPanel.add(calculateButton());
+        return bottomPanel;
+    }
+
     private Component calculateButton() {
-        JButton button = new JButton("Exchange");
+        JButton button = createButton("Exchange \uD83D\uDCB1");
         button.addActionListener(e -> commands.get("exchange").execute());
         return button;
     }
 
     private Component swapButton() {
-        JButton button = new JButton("Swap");
+        JButton button = createButton("Swap ⇄");
         button.addActionListener(e -> commands.get("swap").execute());
+        return button;
+    }
+
+    private JButton createButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(new Color(220, 220, 220));
+        button.setForeground(Color.black);
         return button;
     }
 
